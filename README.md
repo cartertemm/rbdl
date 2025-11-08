@@ -65,6 +65,7 @@ All search parameters are optional and can be combined:
 |------|-------------|---------|
 | `--email` | Email address (required) | `--email user@example.com` |
 | `--output` | Output file path | `--output results.json` |
+| `--format` | Output format: json or csv (auto-detected from filename) | `--format csv` |
 | `--callsign` | Repeater callsign | `--callsign W6ABC` |
 | `--city` | Repeater city | `--city "San Francisco"` |
 | `--country` | Repeater country | `--country USA` |
@@ -90,6 +91,11 @@ Use `%` as a wildcard for pattern matching:
 rbdl --email user@example.com --state CA --mode DMR
 ```
 
+**Search by state and mode, output as CSV:**
+```bash
+rbdl --email user@example.com --state CA --mode DMR --format csv
+```
+
 **Search by frequency in a specific country:**
 ```bash
 rbdl --email user@example.com --country USA --frequency 146.52
@@ -100,9 +106,14 @@ rbdl --email user@example.com --country USA --frequency 146.52
 rbdl --email user@example.com --callsign "K6%"
 ```
 
-**Combine multiple parameters:**
+**Output to CSV (format auto-detected from filename):**
 ```bash
-rbdl --email user@example.com --state NY --mode P25 --output ny_p25.json
+rbdl --email user@example.com --state NY --mode P25 --output ny_p25.csv
+```
+
+**Combine multiple parameters with explicit format:**
+```bash
+rbdl --email user@example.com --state NY --mode P25 --format csv --output ny_p25.csv
 ```
 
 **Fetch all data (no search parameters):**
@@ -112,15 +123,32 @@ rbdl --email user@example.com
 
 ### Output
 
-The application saves data as JSON to disk:
+The application saves data to disk in your chosen format (JSON or CSV):
 
+- **Format:** Use `--format json` or `--format csv`, or let it auto-detect from the output filename
 - **Specified output:** Use `--output` to specify a custom filename
 - **Auto-generated:** If `--output` is not provided, a filename is generated automatically based on search parameters and timestamp
 
-Example auto-generated filename:
+#### Format Auto-Detection
+
+If you don't specify `--format`, the format will be automatically detected:
+- **From output filename:** `--output data.csv` → CSV format, `--output data.json` → JSON format
+- **Default (no output specified):** JSON format
+
+Example auto-generated filenames:
 ```
 repeaterbook_state_CA_mode_DMR_20250108_143022.json
+repeaterbook_state_CA_mode_DMR_20250108_143022.csv
 ```
+
+#### JSON Format
+- Pretty-printed with tab indentation for readability
+- Preserves full data structure from the API
+
+#### CSV Format
+- All repeater fields exported as columns
+- Headers sorted alphabetically for consistency
+- Compatible with Excel, Google Sheets, and other spreadsheet applications
 
 ## Operating Modes
 
