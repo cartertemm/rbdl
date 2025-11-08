@@ -87,24 +87,24 @@ Use `%` as a wildcard for pattern matching:
 
 ### Examples
 
-**Search by state and mode:**
+**Search by country and mode:**
 ```bash
-rbdl --email user@example.com --state CA --mode DMR
+rbdl --email user@example.com --country "United States" --mode DMR
 ```
 
-**Search by state and mode, output as CSV:**
+**Search by country and mode, output as CSV:**
 ```bash
-rbdl --email user@example.com --state CA --mode DMR --format csv
+rbdl --email user@example.com --country "Canada" --mode DMR --format csv
 ```
 
-**Get only on-air repeaters:**
+**Get only on-air repeaters in a country:**
 ```bash
-rbdl --email user@example.com --state CA --on-air
+rbdl --email user@example.com --country "United States" --on-air
 ```
 
 **Search by frequency in a specific country:**
 ```bash
-rbdl --email user@example.com --country USA --frequency 146.52
+rbdl --email user@example.com --country "United States" --frequency 146.52
 ```
 
 **Wildcard search for callsigns:**
@@ -114,15 +114,15 @@ rbdl --email user@example.com --callsign "K6%"
 
 **Output to CSV (format auto-detected from filename):**
 ```bash
-rbdl --email user@example.com --state NY --mode P25 --output ny_p25.csv
+rbdl --email user@example.com --country "Mexico" --mode P25 --output mexico_p25.csv
 ```
 
 **Combine multiple parameters with explicit format:**
 ```bash
-rbdl --email user@example.com --state NY --mode P25 --format csv --output ny_p25.csv
+rbdl --email user@example.com --country "Canada" --mode P25 --format csv --output canada_p25.csv
 ```
 
-**Fetch all data (no search parameters):**
+**Fetch all data (no search parameters, returns first 3500 results):**
 ```bash
 rbdl --email user@example.com
 ```
@@ -202,13 +202,10 @@ This usually indicates an API error. Check the error message for details.
 
 Contributions are welcome! Please ensure all changes:
 - Follow Go best practices
+- Are formatted correctly: tabs for indents, run `gofmt -w main.go`
 - Maintain compatibility with Linux, macOS, and Windows
 - Include appropriate error handling
 
 ## License
 
-This tool is provided as-is for personal use. The data accessed through this tool is owned by RepeaterBook and subject to their terms of service.
-
-## Credits
-
-Data provided by [RepeaterBook](https://www.repeaterbook.com/).
+This tool is licensed under the MIT (see `license.md` for more info). It is provided as-is for personal use. The data accessed through this tool is owned by RepeaterBook and subject to their terms of service.

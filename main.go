@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	apiEndpoint = "https://www.repeaterbook.com/api/export.php"
+	apiEndpoint       = "https://www.repeaterbook.com/api/export.php"
 	userAgentTemplate = "RepeaterbookDL CLI (beta), %s"
 )
 
@@ -79,11 +79,11 @@ func parseFlags() *Config {
 		fmt.Fprintf(os.Stderr, "Options:\n")
 		flag.PrintDefaults()
 		fmt.Fprintf(os.Stderr, "\nExamples:\n")
-		fmt.Fprintf(os.Stderr, "  rbdl --email user@example.com --state CA --mode DMR\n")
-		fmt.Fprintf(os.Stderr, "  rbdl --email user@example.com --state CA --mode DMR --format csv\n")
-		fmt.Fprintf(os.Stderr, "  rbdl --email user@example.com --state CA --on-air\n")
+		fmt.Fprintf(os.Stderr, "  rbdl --email user@example.com --country \"United States\" --mode DMR\n")
+		fmt.Fprintf(os.Stderr, "  rbdl --email user@example.com --country Canada --mode DMR --format csv\n")
+		fmt.Fprintf(os.Stderr, "  rbdl --email user@example.com --country \"United States\" --on-air\n")
 		fmt.Fprintf(os.Stderr, "  rbdl --email user@example.com --output repeaters.csv\n")
-		fmt.Fprintf(os.Stderr, "  rbdl --email user@example.com --country USA --frequency 146.52\n")
+		fmt.Fprintf(os.Stderr, "  rbdl --email user@example.com --country Mexico --frequency 146.52\n")
 		fmt.Fprintf(os.Stderr, "  rbdl --email user@example.com --callsign W%%\n")
 		fmt.Fprintf(os.Stderr, "\nNote: Use %% as wildcard for pattern matching\n")
 	}
