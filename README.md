@@ -66,6 +66,7 @@ All search parameters are optional and can be combined:
 | `--email` | Email address (required) | `--email user@example.com` |
 | `--output` | Output file path | `--output results.json` |
 | `--format` | Output format: json or csv (auto-detected from filename) | `--format csv` |
+| `--on-air` | Only include on-air repeaters | `--on-air` |
 | `--callsign` | Repeater callsign | `--callsign W6ABC` |
 | `--city` | Repeater city | `--city "San Francisco"` |
 | `--country` | Repeater country | `--country USA` |
@@ -94,6 +95,11 @@ rbdl --email user@example.com --state CA --mode DMR
 **Search by state and mode, output as CSV:**
 ```bash
 rbdl --email user@example.com --state CA --mode DMR --format csv
+```
+
+**Get only on-air repeaters:**
+```bash
+rbdl --email user@example.com --state CA --on-air
 ```
 
 **Search by frequency in a specific country:**

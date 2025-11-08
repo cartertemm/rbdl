@@ -24,6 +24,7 @@ type Config struct {
 	Email     string
 	Output    string
 	Format    string
+	OnAir     bool
 	Callsign  string
 	City      string
 	Country   string
@@ -62,6 +63,7 @@ func parseFlags() *Config {
 	flag.StringVar(&config.Email, "email", os.Getenv("RBDL_EMAIL"), "Email address (required, or set RBDL_EMAIL)")
 	flag.StringVar(&config.Output, "output", "", "Output file path (auto-generated if not specified)")
 	flag.StringVar(&config.Format, "format", "", "Output format: json or csv (auto-detected from output filename if not specified)")
+	flag.BoolVar(&config.OnAir, "on-air", false, "Only include on-air repeaters")
 	flag.StringVar(&config.Callsign, "callsign", "", "Repeater callsign (supports % wildcard)")
 	flag.StringVar(&config.City, "city", "", "Repeater city (supports % wildcard)")
 	flag.StringVar(&config.Country, "country", "", "Repeater country (supports % wildcard)")
@@ -79,6 +81,7 @@ func parseFlags() *Config {
 		fmt.Fprintf(os.Stderr, "\nExamples:\n")
 		fmt.Fprintf(os.Stderr, "  rbdl --email user@example.com --state CA --mode DMR\n")
 		fmt.Fprintf(os.Stderr, "  rbdl --email user@example.com --state CA --mode DMR --format csv\n")
+		fmt.Fprintf(os.Stderr, "  rbdl --email user@example.com --state CA --on-air\n")
 		fmt.Fprintf(os.Stderr, "  rbdl --email user@example.com --output repeaters.csv\n")
 		fmt.Fprintf(os.Stderr, "  rbdl --email user@example.com --country USA --frequency 146.52\n")
 		fmt.Fprintf(os.Stderr, "  rbdl --email user@example.com --callsign W%%\n")
@@ -218,12 +221,34 @@ func generateFilename(config *Config) string {
 
 func saveToFile(filepath string, data []byte, config *Config) error {
 	if config.Format == "csv" {
-		return saveToCSV(filepath, data)
+		return saveToCSV(filepath, data, config.OnAir)
 	}
-	return saveToJSON(filepath, data)
+	return saveToJSON(filepath, data, config.OnAir)
 }
 
-func saveToJSON(filepath string, data []byte) error {
+func saveToJSON(filepath string, data []byte, onAirOnly bool) error {
+	// If filtering is needed, parse and reconstruct
+	if onAirOnly {
+		records, err := parseJSONToRecords(data, onAirOnly)
+		if err != nil {
+			return fmt.Errorf("parsing JSON: %w", err)
+		}
+		// Reconstruct response with filtered results and updated count
+		response := map[string]interface{}{
+			"count":   len(records),
+			"results": records,
+		}
+		formatted, err := json.MarshalIndent(response, "", "\t")
+		if err != nil {
+			return fmt.Errorf("formatting JSON: %w", err)
+		}
+		if err := os.WriteFile(filepath, formatted, 0644); err != nil {
+			return fmt.Errorf("writing file: %w", err)
+		}
+		return nil
+	}
+
+	// No filtering, just pretty print
 	var prettyJSON interface{}
 	if err := json.Unmarshal(data, &prettyJSON); err != nil {
 		return fmt.Errorf("parsing JSON: %w", err)
@@ -238,7 +263,7 @@ func saveToJSON(filepath string, data []byte) error {
 	return nil
 }
 
-func parseJSONToRecords(data []byte) ([]map[string]interface{}, error) {
+func parseJSONToRecords(data []byte, onAirOnly bool) ([]map[string]interface{}, error) {
 	// RepeaterBook API returns: {"count": N, "results": [...]}
 	var response struct {
 		Results []map[string]interface{} `json:"results"`
@@ -249,11 +274,25 @@ func parseJSONToRecords(data []byte) ([]map[string]interface{}, error) {
 	if len(response.Results) == 0 {
 		return nil, fmt.Errorf("no results in API response")
 	}
+
+	// Filter for on-air repeaters if requested
+	if onAirOnly {
+		filtered := make([]map[string]interface{}, 0, len(response.Results))
+		for _, record := range response.Results {
+			if status, exists := record["Operational Status"]; exists {
+				if statusStr, ok := status.(string); ok && statusStr == "On-air" {
+					filtered = append(filtered, record)
+				}
+			}
+		}
+		return filtered, nil
+	}
+
 	return response.Results, nil
 }
 
-func saveToCSV(filepath string, data []byte) error {
-	records, err := parseJSONToRecords(data)
+func saveToCSV(filepath string, data []byte, onAirOnly bool) error {
+	records, err := parseJSONToRecords(data, onAirOnly)
 	if err != nil {
 		return fmt.Errorf("parsing JSON: %w", err)
 	}
