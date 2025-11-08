@@ -1,0 +1,23 @@
+# Binaries
+rbdl
+rbdl.exe
+*.exe
+
+# Build artifacts
+*.test
+*.out
+
+# Downloaded JSON files
+repeaterbook*.json
+*.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
