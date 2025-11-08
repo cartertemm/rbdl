@@ -165,6 +165,19 @@ The following operating modes are supported:
 - `P25`
 - `tetra`
 
+## Known API Limitations
+
+While testing, we have observed a few limitations with the RepeaterBook API that are reflected in this tool.
+
+- **State listings may not always work reliably**, some state-based queries may return zero results
+- **Fetching all repeaters without filters maxes out at 3500 results**. If you want to get a complete list of all repeaters in the database, download repeaters one country at a time to ensure full output:
+  ```bash
+  rbdl --email user@example.com --country "United States"
+  rbdl --email user@example.com --country "Canada"
+  rbdl --email user@example.com --country "Mexico"
+  ```
+- **Results are limited to North America, for now**
+
 ## Rate Limiting
 
 The RepeaterBook API implements rate limiting. If you exceed the limits, you'll receive an error:
